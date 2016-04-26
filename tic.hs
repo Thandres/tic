@@ -55,7 +55,7 @@ opponent :: Symbol -> Symbol
 opponent X = O
 opponent O = X
 
-miniMax :: Symbol -> Symbol -> Board -> (Integer, Board)
+miniMax :: Symbol -> Symbol -> Board -> (Int, Board)
 miniMax player turn board
                           | wonBy player board = (10,board)
                           | wonBy (opponent player) board = (-10,board)
