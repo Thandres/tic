@@ -25,20 +25,13 @@ insertAt :: Symbol -> Board -> Int -> Board
 insertAt s b p = as ++ (s:(tail bs))
                  where (as,bs) = splitAt p b 
 
-checkLines :: Symbol -> Board -> Bool
-checkLines s [a0,a1,a2,b0,b1,b2,c0,c1,c2] = let test = all (==s)
-                                            in (test [a0,a1,a2]) || (test [b0,b1,b2]) || (test [c0,c1,c2])
-
-checkColumns :: Symbol -> Board -> Bool 
-checkColumns s [a0,b0,c0,a1,b1,c1,a2,b2,c2] = let test = all (==s)
-                                              in (test [a0,a1,a2]) || (test [b0,b1,b2]) || (test [c0,c1,c2])
-
-checkDiags :: Symbol -> Board -> Bool 
-checkDiags s [x1,_,x2,_,y,_,z2,_,z1] = check [x1,y,z1] || check [x2,y,z2]
-                                           where check = all (== s)
-
 wonBy :: Symbol -> Board -> Bool 
-wonBy s b = checkLines s b || checkDiags s b || checkColumns s b 
+wonBy s [a0,a1,a2,b0,b1,b2,c0,c1,c2] = let test = all (==s)
+                                           checkLines = (test [a0,a1,a2]) || (test [b0,b1,b2]) || (test [c0,c1,c2])
+                                           checkColumns = (test [a0,b0,c0]) || (test [a1,b1,c1]) || (test [a2,b2,c2])
+                                           checkDiags = (test [a0,b1,c2]) || (test [a2,b1,c0])  
+                                           in
+                                         checkLines || checkColumns  || checkDiags
 
 isEmpty :: Board -> Int -> Bool
 isEmpty b i = (b !! i) == Empty 
