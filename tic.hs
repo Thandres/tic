@@ -1,7 +1,7 @@
 import Data.List
 import Data.Ord
 
-data Symbol = O | X | Empty deriving (Show, Eq)
+data Symbol = X | O | Empty deriving (Show, Eq)
 
 show' :: Symbol -> String
 show' Empty = " "
@@ -26,21 +26,16 @@ insertAt s b p = as ++ (s:(tail bs))
                  where (as,bs) = splitAt p b 
 
 checkLines :: Symbol -> Board -> Bool
-checkLines _ [] = False
-checkLines s b  = (and $ map (== s) (take 3 b)) || checkLines s (drop 3 b)
-
-every :: Int -> [a] -> [a]
-every n [] = []
-every n b = head b : every n (drop n b)
+checkLines s [a0,a1,a2,b0,b1,b2,c0,c1,c2] = let test = all (==s)
+                                            in (test [a0,a1,a2]) || (test [b0,b1,b2]) || (test [c0,c1,c2])
 
 checkColumns :: Symbol -> Board -> Bool 
-checkColumns s b = let column = (every 3 b)
-                   in if (length column) < 3 then False else 
-                     (and $ map (== s) column) || checkColumns s (tail b)
+checkColumns s [a0,b0,c0,a1,b1,c1,a2,b2,c2] = let test = all (==s)
+                                              in (test [a0,a1,a2]) || (test [b0,b1,b2]) || (test [c0,c1,c2])
 
 checkDiags :: Symbol -> Board -> Bool 
 checkDiags s [x1,_,x2,_,y,_,z2,_,z1] = check [x1,y,z1] || check [x2,y,z2]
-                                           where check = and . map (== s)
+                                           where check = all (== s)
 
 wonBy :: Symbol -> Board -> Bool 
 wonBy s b = checkLines s b || checkDiags s b || checkColumns s b 
@@ -69,7 +64,7 @@ miniMax player turn board
 bestMove :: Symbol -> Board -> Board
 bestMove s b = snd (miniMax s s b)
 
-play 0 _ b = putStrLn ""
+play 0 _ _ = putStrLn ""
 play n s b = let nextBoard = bestMove s b
                  in
                    do
@@ -78,4 +73,3 @@ play n s b = let nextBoard = bestMove s b
                      play (n-1) (opponent s) nextBoard
             
 main = play 9 X board
-
