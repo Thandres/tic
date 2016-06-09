@@ -12,14 +12,9 @@ type Board = [Symbol]
 board :: Board
 board = replicate 9 Empty 
 
-print' :: Board -> IO ()
-print' [] = putStrLn "+-+-+-+"
-print' board = do
-                putStrLn "+-+-+-+"
-                line $ take 3 board
-                print' $ drop 3 board
-               where line b = do
-                               sequence_ . map putStr $ map ("|" ++) (map show' b) ++ ["|\n"]
+show'' :: Board -> String
+show'' [] = "+-+-+-+"
+show'' b = "+-+-+-+\n" ++ (concat $ map ("|" ++) (map show' $ take 3 b)) ++ "|\n" ++ (show'' $ drop 3 b)
 
 insertAt :: Symbol -> Board -> Int -> Board
 insertAt s b 0 = s : (tail b)
@@ -58,7 +53,7 @@ bestMove s b = snd (miniMax s s b)
 
 play 0 _ _ = putStrLn ""
 play n s b = do
-               print' nextBoard
+               putStrLn $ show'' nextBoard
                putStrLn ""
                play (n-1) (opponent s) nextBoard
              where nextBoard = bestMove s b
