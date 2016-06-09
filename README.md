@@ -10,8 +10,8 @@
 
 # Haskell Tic Tac Toe implementation with minimax solution<a id="orgheadline1"></a>
 
-    import Data.List
-    import Data.Ord
+    import Data.List (maximumBy, minimumBy)
+    import Data.Ord (comparing)
     
     data Symbol = X | O | Empty deriving (Show, Eq)
     
@@ -61,7 +61,7 @@
                               | otherwise = if null boards then (0,board) else bestOf boards
                                             where 
                                               boards = possibleBoards turn board
-                                              scores = map fst $ map (miniMax player (opponent turn)) boards
+                                              scores = map (fst . (miniMax player (opponent turn))) boards
                                               minOrMaxBy = if player == turn then maximumBy else minimumBy
                                               bestOf = minOrMaxBy (comparing fst) . zip scores 
     
@@ -82,6 +82,8 @@
     ghc src/tic.hs -o tic
     ./tic
 
+    [1 of 1] Compiling Main             ( src/tic.hs, src/tic.o )
+    Linking tic ...
     +-+-+-+
     | | | |
     +-+-+-+

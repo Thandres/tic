@@ -1,5 +1,5 @@
-import Data.List
-import Data.Ord
+import Data.List (maximumBy, minimumBy)
+import Data.Ord (comparing)
 
 data Symbol = X | O | Empty deriving (Show, Eq)
 
@@ -49,7 +49,7 @@ miniMax player turn board
                           | otherwise = if null boards then (0,board) else bestOf boards
                                         where 
                                           boards = possibleBoards turn board
-                                          scores = map fst $ map (miniMax player (opponent turn)) boards
+                                          scores = map (fst . (miniMax player (opponent turn))) boards
                                           minOrMaxBy = if player == turn then maximumBy else minimumBy
                                           bestOf = minOrMaxBy (comparing fst) . zip scores 
                                                 
