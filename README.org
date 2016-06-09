@@ -29,12 +29,11 @@ insertAt s b 0 = s : (tail b)
 insertAt s (x:xs) p = x : (insertAt s xs (p-1))
 
 wonBy :: Symbol -> Board -> Bool 
-wonBy s [a0,a1,a2,b0,b1,b2,c0,c1,c2] = let test = all (==s)
-                                           checkLines = (test [a0,a1,a2]) || (test [b0,b1,b2]) || (test [c0,c1,c2])
-                                           checkColumns = (test [a0,b0,c0]) || (test [a1,b1,c1]) || (test [a2,b2,c2])
-                                           checkDiags = (test [a0,b1,c2]) || (test [a2,b1,c0])  
-                                           in
-                                         checkLines || checkColumns  || checkDiags
+wonBy s [a0,a1,a2,b0,b1,b2,c0,c1,c2] = checkLines || checkColumns  || checkDiags
+                                       where checkLines = (test [a0,a1,a2]) || (test [b0,b1,b2]) || (test [c0,c1,c2])
+                                             checkColumns = (test [a0,b0,c0]) || (test [a1,b1,c1]) || (test [a2,b2,c2])
+                                             checkDiags = (test [a0,b1,c2]) || (test [a2,b1,c0])  
+					     test = all (==s)
 
 isEmpty :: Board -> Int -> Bool
 isEmpty b i = (b !! i) == Empty 
@@ -50,24 +49,23 @@ miniMax :: Symbol -> Symbol -> Board -> (Int, Board)
 miniMax player turn board
                           | wonBy player board = (10,board)
                           | wonBy (opponent player) board = (-10,board)
-                          | otherwise = let boards = possibleBoards turn board
-                                        in if null boards then (0,board) else
-                                             let scores = map fst $ map (miniMax player (opponent turn)) boards
-                                                 minOrMaxBy = if player == turn then maximumBy else minimumBy
-                                                 bestOf = minOrMaxBy (comparing fst) . zip scores 
-                                             in bestOf boards
+                          | otherwise = if null boards then (0,board) else bestOf boards
+					where 
+				 	  boards = possibleBoards turn board
+					  scores = map fst $ map (miniMax player (opponent turn)) boards
+                                          minOrMaxBy = if player == turn then maximumBy else minimumBy
+                                          bestOf = minOrMaxBy (comparing fst) . zip scores 
                                                 
 bestMove :: Symbol -> Board -> Board
 bestMove s b = snd (miniMax s s b)
 
 play 0 _ _ = putStrLn ""
-play n s b = let nextBoard = bestMove s b
-                 in
-                   do
-                     print' nextBoard
-                     putStrLn ""
-                     play (n-1) (opponent s) nextBoard
-            
+play n s b = do
+               print' nextBoard
+               putStrLn ""
+               play (n-1) (opponent s) nextBoard
+             where nextBoard = bestMove s b
+
 main = play 9 X board
 #+END_SRC
 
