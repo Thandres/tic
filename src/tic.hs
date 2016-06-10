@@ -13,8 +13,8 @@ board :: Board
 board = replicate 9 Empty 
 
 show'' :: Board -> String
-show'' [] = "+-+-+-+"
-show'' b = "+-+-+-+\n" ++ (concat $ map ("|" ++) (map show' $ take 3 b)) ++ "|\n" ++ (show'' $ drop 3 b)
+show'' [] = "+-+-+-+\n"
+show'' b = show''[] ++ (concat $ map (("|" ++) . show') $ take 3 b) ++ "|\n" ++ (show'' $ drop 3 b)
 
 insertAt :: Symbol -> Board -> Int -> Board
 insertAt s b 0 = s : (tail b)
@@ -54,7 +54,6 @@ bestMove s b = snd (miniMax s s b)
 play 0 _ _ = putStrLn ""
 play n s b = do
                putStrLn $ show'' nextBoard
-               putStrLn ""
                play (n-1) (opponent s) nextBoard
              where nextBoard = bestMove s b
 
